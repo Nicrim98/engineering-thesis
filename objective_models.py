@@ -1,4 +1,4 @@
-from generate_data import *
+from generate_data import normal
 
 acr = [1, 2, 3, 4, 5]
 

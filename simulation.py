@@ -5,7 +5,7 @@ from objective_models import *
 import rmse as rmse
 import outlier_ratio as outlier
 import pearson as pearson
-from algorithms_comparison import compare_algorithms
+from metrics_comparison import compare_metrics
 
 sim_loop = 1000
 acr = [1, 2, 3, 4, 5]
@@ -31,12 +31,12 @@ all_OutlierRatio_compare_arr = []
 params = []
 
 
-def include_param_in_comparison(param_name, all_values, all_values_compare_arr, algorithms):
+def include_param_in_comparison(param_name, all_values, all_values_compare_arr, parameters_arr):
     all_values = np.vstack(all_values)
     all_values_compared = np.stack(all_values_compare_arr, axis=2)
-    algorithms.append(all_values_compared)
+    parameters_arr.append(all_values_compared)
     compressed_pickle('all_'+param_name+'_compared', all_values_compared)
-    return all_values, all_values_compared, algorithms
+    return all_values, all_values_compared, parameters_arr
 
 
 start_time = time.time()
@@ -84,17 +84,17 @@ for number in range(0, sim_loop, 1):
 all_psi = np.vstack(all_psi_arr)
 all_delta = np.vstack(all_delta_arr)
 all_epsilon = np.vstack(all_epsilon_arr)
-all_ratings = np.vstack(all_ratings_arr)
+all_ratings = np.stack(all_ratings_arr, axis=2)
 all_MOS_measured = np.dstack(all_mos_measured)
 all_MOS_measured_mean = np.mean(all_MOS_measured, axis=2)
 
-# gathering data into matrixes and store them using compressed_pickle
-algorithms = []     # lepsza nazwa by się przydała
-all_rmse, all_rmse_compare, algorithms = include_param_in_comparison('rmse', all_rmse, all_rmse_compare_arr, algorithms)
-all_outlier, all_OutlierRatio_compare_arr, algorithms = include_param_in_comparison(
-    'outlier', all_outlier, all_OutlierRatio_compare_arr, algorithms)
-all_pearson, all_Pearson_compare_arr, algorithms = include_param_in_comparison(
-    'pearson', all_pearson, all_pearson_compare_arr, algorithms)
+# gathering data into matrixes and final comparison
+metrics = []
+all_rmse, all_rmse_compare, metrics = include_param_in_comparison('rmse', all_rmse, all_rmse_compare_arr, algorithms)
+all_outlier, all_OutlierRatio_compare_arr, metrics = include_param_in_comparison(
+    'outlier', all_outlier, all_OutlierRatio_compare_arr, metrics)
+all_pearson, all_Pearson_compare_arr, metrics = include_param_in_comparison(
+    'pearson', all_pearson, all_pearson_compare_arr, metrics)
 
-algorithms_compared = compare_algorithms(number_of_metrics, algorithms)
+metrics_compared = compare_metrics(number_of_metrics, metrics)
 print("--- %s seconds ---" % (time.time() - start_time))

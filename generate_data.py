@@ -6,8 +6,8 @@ number_of_voters = 30
 number_of_sequences = 100
 acr = [1, 2, 3, 4, 5]
 psi_low, psi_high = 1.0, 5.0
-delta_mean, delta_st_deviation = 1, 1.5
-epsilon_low, epsilon_high = 0.8, 0.9
+delta_mean, delta_st_deviation = 0, 0
+epsilon_low, epsilon_high = 0, 0
 
 
 def compressed_pickle(title, data):
