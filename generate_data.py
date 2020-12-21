@@ -1,24 +1,11 @@
 import numpy as np
-import _pickle as cpickle
-import bz2
 
 number_of_voters = 30
 number_of_sequences = 100
 acr = [1, 2, 3, 4, 5]
 psi_low, psi_high = 1.0, 5.0
-delta_mean, delta_st_deviation = 0, 0
-epsilon_low, epsilon_high = 0, 0
-
-
-def compressed_pickle(title, data):
-    with bz2.BZ2File(title + '.pbz2', 'w') as f:
-        cpickle.dump(data, f)
-
-
-def decompress_pickle(file):
-    data = bz2.BZ2File(file, 'rb')
-    data = cpickle.load(data)
-    return data
+delta_mean, delta_st_deviation = 0, 0.7
+epsilon_low, epsilon_high = 0.3, 0.9
 
 
 def uniform(low, high, size):
@@ -40,18 +27,13 @@ def scoring_process(psi, delta, epsilon):
     return ratings, measured_mos
 
 
-def generate_subjective_data(number):
-    # generowanie liczb opisujących jakość (psi)
+def generate_subjective_data():
+    # sequence quality
     psi = uniform(psi_low, psi_high, number_of_sequences)
-    # generowanie liczb opisujących obciążenie (delta)
+    # user imprecision
     delta = normal(delta_mean, delta_st_deviation, number_of_voters)
-    # generowanie liczb opisujących stabilność odpowiedzi (sigma)
+    # error
     epsilon = uniform(epsilon_low, epsilon_high, number_of_voters)
-    # generate subjective scoring assesment
+    # scored sequenced
     ratings, measured_mos = scoring_process(psi, delta, epsilon)
-
-    # compressed_pickle('input_data/psi/psi_'+str(number), psi)
-    # compressed_pickle('input_data/delta/delta_'+str(number), delta)
-    # compressed_pickle('input_data/epsilon/epsilon_'+str(number), epsilon)
-    # compressed_pickle('input_data/ratings/ratings_' + str(number), ratings)
     return psi, delta, epsilon, ratings, measured_mos

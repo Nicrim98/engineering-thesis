@@ -44,7 +44,6 @@ def compare_models(rmse_param, threshold, number_of_metrics):
 
 
 def get_rmse(measured_mos, predicted_mos, all_rmse, all_rmse_ci, all_rmse_compare_arr):
-    # RMSE
     number_of_samples = predicted_mos.shape[1]
     number_of_metrics = predicted_mos.shape[2]
 
