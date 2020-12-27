@@ -12,14 +12,14 @@ def confidence_interval_pearson_coefficient(r, number_of_samples):
     return interval
 
 
-def calculate_pearson_coefficient(measured_mos, predicted_mos, mean_of_est_PVSs, mean_of_metric_PVSs):
-    numerator_pearson = np.sum(((measured_mos - mean_of_est_PVSs) * (predicted_mos - mean_of_metric_PVSs)), axis=0)
-    denominator_pearson = math.sqrt(np.sum(((measured_mos - mean_of_est_PVSs) ** 2), axis=0)) * math.sqrt(np.sum(((predicted_mos - mean_of_metric_PVSs) ** 2), axis=0))
-    pearson_correlation_coef = numerator_pearson / denominator_pearson
-    return pearson_correlation_coef
+def calculate_pearson_coefficient(measured_mos, predicted_mos, mean_of_measured_mos, mean_of_predicted_mos):
+    numerator_pearson = np.sum(((measured_mos - mean_of_measured_mos) * (predicted_mos - mean_of_predicted_mos)), axis=0)
+    denominator_pearson = math.sqrt(np.sum(((measured_mos - mean_of_measured_mos) ** 2), axis=0)) * math.sqrt(np.sum(((predicted_mos - mean_of_predicted_mos) ** 2), axis=0))
+    pearson_correlation_coefficient = numerator_pearson / denominator_pearson
+    return pearson_correlation_coefficient
 
 
-def compare_pearson_coeff(pearson_1, pearson_2, standard_deviation, threshold):
+def compare_pearson_coefficient(pearson_1, pearson_2, standard_deviation, threshold):
     z1 = 0.5 * math.log((1 + pearson_1) / (1 - pearson_1))
     z2 = 0.5 * math.log((1 + pearson_2) / (1 - pearson_2))
     zn = (z1 - z2) / standard_deviation
@@ -37,7 +37,7 @@ def compare_models(pearson_param, threshold, number_of_metrics, zn_standard_dev)
     for x in range(0, number_of_metrics):
         for y in range(0, number_of_metrics):
             if x < y:
-                comparing_result = compare_pearson_coeff(pearson_param[x], pearson_param[y], zn_standard_dev, threshold)
+                comparing_result = compare_pearson_coefficient(pearson_param[x], pearson_param[y], zn_standard_dev, threshold)
                 compared[x, y] = comparing_result
     return compared
 
@@ -49,11 +49,11 @@ def get_pearson(measured_mos, predicted_mos, all_pearson, all_pearson_ci, all_pe
 
     pearson_coeff_arr = []
     pearson_coeff_ci_arr = []
-    mean_of_est_PVSs = np.mean(measured_mos, axis=0)
+    mean_of_measured_mos = np.mean(measured_mos, axis=0)
     for x in range(number_of_metrics):
-        mean_of_metric_PVSs = np.mean(predicted_mos[0, :, x], axis=0)
-        pearson_coeff_arr.append(calculate_pearson_coefficient(measured_mos, predicted_mos[0, :, x], mean_of_est_PVSs,
-                                                               mean_of_metric_PVSs))
+        mean_of_predicted_mos = np.mean(predicted_mos[0, :, x], axis=0)
+        pearson_coeff_arr.append(calculate_pearson_coefficient(measured_mos, predicted_mos[0, :, x], mean_of_measured_mos,
+                                                               mean_of_predicted_mos))
         pearson_coeff_ci_arr.append(confidence_interval_pearson_coefficient(pearson_coeff_arr[-1], number_of_samples))
     pearson_coeff = np.hstack(pearson_coeff_arr)
     pearson_coeff_ci = np.hstack(pearson_coeff_ci_arr)

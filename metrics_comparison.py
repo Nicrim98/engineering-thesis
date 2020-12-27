@@ -1,8 +1,8 @@
 import numpy as np
 
 
-def compare_metrics(number_of_metrics, metrics):
-    if number_of_metrics > 1:
+def compare_metrics(number_of_models, metrics):
+    if number_of_models > 1:
         # Podsumowanie wyników porównań wszystkich metryk w kontekście każdego parametru
         # rmse = decompress_pickle('all_rmse_compared.pbz2').astype(np.float)
         # outlier = decompress_pickle('all_outlierRatio_compared.pbz2').astype(np.float)

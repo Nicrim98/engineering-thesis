@@ -12,14 +12,6 @@ def confidence_interval_outlier_ratio(outlier_ratio, number_of_samples):
     return interval
 
 
-def calculate_outlier_confidence_interval(ratings):
-    # potrzebna inna nazwa do tego !!!
-    number_voters = ratings.shape[1]
-    z = 1.96
-    confidence_interval = (z * np.std(ratings, axis=1)) / math.sqrt(number_voters)
-    return confidence_interval
-
-
 def calculate_outlier_ratio(measured_mos, predicted_mos, confidence_interval, number_of_samples):
     points = confidence_interval - (measured_mos - predicted_mos)**2
     outliers = [out for out in points if out < 0]
@@ -56,14 +48,16 @@ def compare_models(outlier_param, threshold, number_of_metrics, number_of_sample
 
 def get_outlier(measured_mos, predicted_mos, ratings, all_outlier, all_outlier_ratio_ci, all_outlier_ratio_compare_arr):
     # Outlier Ratio
+    z = 1.96
+    number_of_voters = ratings.shape[1]
     number_of_samples = predicted_mos.shape[1]
     number_of_metrics = predicted_mos.shape[2]
 
-    confidence_interval = calculate_outlier_confidence_interval(ratings)
+    mean_mos_confidence_interval = ((z * np.std(ratings, axis=1)) / math.sqrt(number_of_voters))
     outlier_ratio_arr = []
     outlier_ratio_confidence_arr = []
     for x in range(number_of_metrics):
-        outlier_ratio_arr.append(calculate_outlier_ratio(measured_mos, predicted_mos[0, :, x], confidence_interval,
+        outlier_ratio_arr.append(calculate_outlier_ratio(measured_mos, predicted_mos[0, :, x], mean_mos_confidence_interval,
                                                          number_of_samples))
         outlier_ratio_confidence_arr.append(confidence_interval_outlier_ratio(outlier_ratio_arr[-1], number_of_samples))
     outlier_ratio = np.hstack(outlier_ratio_arr)
