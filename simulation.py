@@ -29,9 +29,9 @@ all_outlier_ci = []
 all_pearson_ci = []
 
 # output data
-all_rmse_compare_arr = []
-all_pearson_compare_arr = []
-all_outlier_ratio_compare_arr = []
+all_rmse_compared_arr = []
+all_pearson_compared_arr = []
+all_outlier_ratio_compared_arr = []
 
 params = []
 
@@ -46,12 +46,13 @@ def decompress_pickle(file):
     return data
 
 
-def include_param_in_comparison(param_name, all_values, all_values_compare_arr, parameters_arr):
+def include_param_in_comparison(param_name, all_values, all_values_ci, all_values_compare_arr, parameters_arr):
     all_values = np.vstack(all_values)
+    all_values_ci = np.stack(all_values_ci)
     all_values_compared = np.stack(all_values_compare_arr, axis=2)
     parameters_arr.append(all_values_compared)
     compressed_pickle('all_'+param_name+'_compared', all_values_compared)
-    return all_values, all_values_compared, parameters_arr
+    return all_values, all_values_ci, all_values_compared, parameters_arr
 
 
 start_time = time.time()
@@ -67,9 +68,9 @@ for sim_iteration in range(0, sim_loop, 1):
     number_of_models = predicted_mos.shape[2]
 
     # METRICS
-    rmse.get_rmse(measured_mos, predicted_mos, all_rmse, all_rmse_ci, all_rmse_compare_arr)
-    outlier.get_outlier(measured_mos, predicted_mos, ratings, all_outlier, all_outlier_ci, all_outlier_ratio_compare_arr)
-    pearson.get_pearson(measured_mos, predicted_mos, all_pearson, all_pearson_ci, all_pearson_compare_arr)
+    rmse.get_rmse(measured_mos, predicted_mos, all_rmse, all_rmse_ci, all_rmse_compared_arr)
+    outlier.get_outlier(measured_mos, predicted_mos, ratings, all_outlier, all_outlier_ci, all_outlier_ratio_compared_arr)
+    pearson.get_pearson(measured_mos, predicted_mos, all_pearson, all_pearson_ci, all_pearson_compared_arr)
 
     # stacking values related to the simulation for archiving purposes
     all_psi_arr.append(psi)
@@ -89,12 +90,12 @@ all_mos_measured_mean = np.mean(all_mos_measured, axis=2)
 
 # gathering data into matrixes and final comparison
 metrics = []
-all_rmse, all_rmse_compared, metrics = include_param_in_comparison(
-    'rmse', all_rmse, all_rmse_compare_arr, metrics)
-all_outlier, all_outlier_ratio_compared, metrics = include_param_in_comparison(
-    'outlier', all_outlier, all_outlier_ratio_compare_arr, metrics)
-all_pearson, all_pearson_compared, metrics = include_param_in_comparison(
-    'pearson', all_pearson, all_pearson_compare_arr, metrics)
+all_rmse, all_rmse_ci, all_rmse_compared, metrics = include_param_in_comparison(
+    'rmse', all_rmse, all_rmse_ci, all_rmse_compared_arr, metrics)
+all_outlier, all_outlier_ci, all_outlier_ratio_compared, metrics = include_param_in_comparison(
+    'outlier', all_outlier, all_outlier_ci, all_outlier_ratio_compared_arr, metrics)
+all_pearson, all_pearson_ci, all_pearson_compared, metrics = include_param_in_comparison(
+    'pearson', all_pearson, all_pearson_ci, all_pearson_compared_arr, metrics)
 
 metrics_compared = compare_metrics(number_of_models, metrics)
 
