@@ -1,0 +1,5 @@
+Programming language — Python3 (version 3.6.7)
+Python main libraries:
+–NumPy(version 1.19.0)
+–SciPy(version 1.14.5)
+–compress-pickle(version 1.2.0)
